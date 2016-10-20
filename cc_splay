@@ -1,0 +1,49 @@
+desc: Splay Midi Notes
+//tags: MIDI processing routing
+
+slider1:75<0,127,1>Input CC Number
+slider2:6<0,127,1>Number of CCs
+slider3:58<0,127,1>Base Value
+
+in_pin:none
+out_pin:none
+
+@init
+
+CC_MSG = 11;
+
+@slider
+
+ccin = slider1;
+count = slider2;
+baseval = slider3;
+
+@block
+
+while (
+  midirecv(mpos, msg1, msg23) ? (
+    status = msg1;
+    statusHi = (msg1/16)|0;
+    statusLo = msg1-(statusHi*16);
+    msg3 = (msg23/256)|0; // cc value
+    ccval = msg3;
+    msg2 = msg23-(msg3*256); // cc number
+   
+    (statusHi == CC_MSG && msg2 == ccin) ? (
+      msg2 = ccin; // send ccs starting from ccin
+      i = 1; // our loop index from 0 to count
+      loop(count,
+        exponent = 1+ (ccval / 127) * (1/(count * 4) * i);
+        msg2 = ccin + i - 1; // cc number
+        msg3 = baseval + (floor((ccval) ^ exponent)); // cc value
+        msg3 = min(msg3,127);
+        msg3 = max(msg3,0);
+        msg23 = (msg3*256+msg2)|0;
+        (msg2 <= 127) ? midisend(mpos, msg1, msg23);
+        i = i + 1;
+      );
+    ) :  midisend(mpos, msg1, msg23);
+
+  );
+);
+

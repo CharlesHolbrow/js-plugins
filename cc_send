@@ -1,0 +1,25 @@
+desc: MIDI CC Mapper
+//tags: MIDI processing routing
+
+slider1:63<0,127,1>CC Number
+slider2:63<0,127,1>CC Value
+
+in_pin:none
+out_pin:none
+
+@init
+
+CC_MSG = 11;
+last_cc_number = slider1;
+last_cc_value = slider2;
+
+
+@slider
+
+@block
+
+(last_cc_value != slider2) ? (
+  msg23 = slider1 + (slider2 * 256);
+  midisend(0, 176, msg23);
+  last_cc_value = slider2;
+);

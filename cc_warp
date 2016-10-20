@@ -1,0 +1,39 @@
+desc: MIDI CC Mapper
+//tags: MIDI processing routing
+
+slider1:74<0,127,1>Input CC Number
+slider2:63<0,127,1>Base Output Value
+slider3:1<-16,16,1>Multiplier
+
+in_pin:none
+out_pin:none
+
+@init
+
+CC_MSG = 11;
+
+@slider
+
+ccin = slider1;
+ccbase = slider2;
+ccmult = slider3;
+
+@block
+
+while (
+  midirecv(mpos, msg1, msg23) ? (
+    status = msg1;
+    statusHi = (msg1/16)|0;
+    statusLo = msg1-(statusHi*16);
+    msg3 = (msg23/256)|0;
+    msg2 = msg23-(msg3*256);
+    (statusHi == CC_MSG && msg2 == ccin) ? (
+      msg3 = ccbase + msg3 * ccmult;
+      msg3 = min(msg3,127);
+      msg3 = max(msg3,0);
+      msg23 = (msg3*256+msg2)|0;
+    );
+    midisend(mpos, msg1, msg23);
+  );
+);
+

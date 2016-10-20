@@ -1,0 +1,31 @@
+desc: Null Sliders
+//tags: MIDI processing routing
+
+slider1:0<-64,63,.1>Base
+slider2:0<-256,255,1>Simple Slider 2
+slider3:0<-256,255,1>Simple Slider 3
+slider4:0<-256,255,1>Simple Slider 4
+slider5:0<-256,255,1>Simple Slider 5
+slider6:0<-256,255,1>Simple Slider 6
+slider7:0<-256,255,1>Simple Slider 7
+slider8:0<-256,255,1>Offset
+
+in_pin:none
+out_pin:none
+
+@init
+
+
+@slider
+
+(slider1 >= 0) ? (even = 1; odd = -1) : (odd = 1; even = -1);
+base = abs(slider1);
+off = slider8;
+
+slider2 = off + (base * even);
+slider3 = off + (base * odd);
+slider4 = off + (pow(base, 1.1) * even);
+slider5 = off + (pow(base, 1.1) * odd);
+slider6 = off + (pow(base, 1.2) * even);
+slider7 = off + (pow(base, 1.2) * odd);
+
