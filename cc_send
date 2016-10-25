@@ -1,4 +1,4 @@
-desc: MIDI CC Mapper
+desc:Send MIDI CC on Channel 1
 //tags: MIDI processing routing
 
 slider1:63<0,127,1>CC Number
